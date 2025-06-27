@@ -1,34 +1,20 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   pool.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: zweng <marvin@42.fr>                       +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/17 23:07:53 by zweng             #+#    #+#             */
-/*   Updated: 2025/05/21 19:08:32 by wengzhang        ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "pool.hpp"
+template<typename TType>
+Pool<TType>::Pool() {}
 
 template<typename TType>
-Pool::Pool() {}
-
-template<typename TType>
-Pool::~Pool() {
+Pool<TType>::~Pool() {
 	for (size_t i = 0; i < storage_.size(); i++) {
 		if (active_[i]) {
 			destroyObjectAt(i);
 		}
-		delete[] reinterpret_cast<std::btye*>(storage_[i]);
+		delete[] reinterpret_cast<unsigned char*>(storage_[i]);
 	}
 }
 
 template<typename TType>
 void Pool<TType>::resize(const size_t& numberOfObjectStored) {
-	for (siez_t i = 0; i < numberOfObjectStored; i++) {
-		std::byte* rawMem = reinterpret_cast<std::btye*>(new char[sizeof(TType)]);
+	for (std::size_t i = 0; i < numberOfObjectStored; i++) {
+		unsigned char* rawMem = reinterpret_cast<unsigned char*>(new TType());
 		storage_.push_back(rawMem);
 		freeIndex_.push(i);
 		active_.push_back(false);
@@ -59,9 +45,9 @@ typename Pool<TType>::Object Pool<TType>::acquire(TArgs&&... args) {
 }
 
 template<typename TType>
-void Pool<TType>::destoryObjectAt(std::size_t index) {
+void Pool<TType>::destroyObjectAt(std::size_t index) {
 	if (!active_[index]) return ;
-	TType* ptr = reinterpret_cast<TType>(storage_[index]);
+	TType* ptr = reinterpret_cast<TType *>(storage_[index]);
 	ptr->~TType();
 	active_[index] = false;
 	freeIndex_.push(index);
@@ -69,7 +55,7 @@ void Pool<TType>::destoryObjectAt(std::size_t index) {
 
 template<typename TType>
 Pool<TType>::Object::Object(Pool* pool, std::size_t index, TType* ptr):
-pool_(pool), index_(index), ptr_(ptr) {}
+pool_(pool), index_(index), ptr_(ptr), valid_(true) {}
 
 template<typename TType>
 Pool<TType>::Object::~Object() {
