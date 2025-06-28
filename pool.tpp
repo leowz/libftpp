@@ -1,3 +1,6 @@
+#ifndef POOL_TPP
+# define POOL_TPP
+
 template<typename TType>
 Pool<TType>::Pool() {}
 
@@ -96,30 +99,4 @@ typename Pool<TType>::Object& Pool<TType>::Object::operator=(Object&& other) {
 	return *this;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif

@@ -1,3 +1,6 @@
+#ifndef DATA_BUFFER_TPP
+# define DATA_BUFFER_TPP
+
 template<typename T>
 DataBuffer& DataBuffer::operator<<(const T& value)
 {
@@ -24,3 +27,5 @@ DataBuffer& DataBuffer::operator>>(T& value)
 	readPos_ += sizeof(T);	
 	return *this;
 }
+
+#endif
