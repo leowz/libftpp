@@ -6,7 +6,7 @@
 #    By: zweng <zweng@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/19 12:41:50 by zweng             #+#    #+#              #
-#    Updated: 2025/05/01 22:22:37 by zweng            ###   ########.fr        #
+#    Updated: 2025/06/27 22:44:41 by wengzhang        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,12 +17,14 @@ NAME 		= libftpp.a
 
 # ---------------- transformation ------------------ #
 
-SRCS = 
+SRCS =		data_buffer.cpp \
+			memento.cpp
+
 
 OBJS = $(SRCS:.cpp=.o)
 
 FLAGS 		=  -Wall -Wextra -Werror \
-			   -std=c++20
+			   -std=c++11
 
 DEBUGF 		= #-fsanitize=address -g
 
@@ -49,17 +51,20 @@ $(NAME): $(OBJS)
 	@$(CC) $(FLAGS) -o $@ -c $<
 
 clean: 
-	@rm -f $(OBJS)
+	@rm -f $(OBJS) &2>/dev/null
+	@rm main.o &2>/dev/null
 	@printf $(GREEN)"$(NAME) clean\n"$(EOC)
-	@make -C $(LIB_PATH) clean
 
 
 fclean: clean
-	@/bin/rm -f $(NAME)
+	@/bin/rm -f $(NAME) &2>/dev/null
+	@rm main &2>/dev/null
 	@printf $(GREEN)"$(NAME) fclean\n"$(EOC)
 
-test:
-	echo $(arg1)
+test: all
+	@$(CC) -c $(main) -I. -std=c++11 -o main.o
+	@$(CC) main.o -I. -L. -lftpp -std=c++11 -o main
+	@./main
 
 re: fclean all
 
