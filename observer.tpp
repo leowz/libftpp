@@ -11,12 +11,18 @@ template<typename TEvent>
 void Observer<TEvent>::notify(const TEvent& event)
 {
     auto it = subscriptions_.find(event);
-    if (it == subscriptions_.end()) {
+    if (it == subscriptions_.end())
+    {
         std::cout << "None, as there are no subscribers" << std::endl;
         return;
     }
-	for (const auto& lambda : it->second)
-		lambda();
+    else
+    {
+        for (const auto& lambda : it->second)
+        {
+            lambda();
+        }
+    }
 }
 
 #endif
