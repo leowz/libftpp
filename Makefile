@@ -18,8 +18,8 @@ NAME 		= libftpp.a
 # ---------------- transformation ------------------ #
 
 SRCS =		data_buffer.cpp \
-			memento.cpp
-
+			memento.cpp \
+			thread_safe_iostream.cpp \
 
 OBJS = $(SRCS:.cpp=.o)
 
