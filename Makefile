@@ -21,6 +21,7 @@ SRCS =		data_buffer.cpp \
 			memento.cpp \
 			thread_safe_iostream.cpp \
 			thread.cpp \
+			worker_pool.cpp \
 
 OBJS = $(SRCS:.cpp=.o)
 
