@@ -1,23 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   design_patterns.hpp                                :+:      :+:    :+:   */
+/*   network.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wengzhang <marvin@42.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/25 15:45:01 by wengzhang         #+#    #+#             */
-/*   Updated: 2025/06/28 20:35:41 by wengzhang        ###   ########.fr       */
+/*   Created: 2025/07/01 22:55:30 by wengzhang         #+#    #+#             */
+/*   Updated: 2025/07/05 13:00:51 by wengzhang        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef "DESIGNE_PATTERNS_HPP"
-# define "DESIGNE_PATTERNS_HPP"
+#ifndef NETWORK_HPP
+# define NETWORK_HPP
 
-# include "memento.hpp"
-# include "observer.hpp"
-# include "singleton.hpp"
-# include "state_machine.hpp"
+# include "message.hpp"
+# include "client.hpp"
+# include "server.hpp"
 
 #endif
-
-

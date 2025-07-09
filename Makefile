@@ -23,6 +23,9 @@ SRCS =		data_buffer.cpp \
 			thread.cpp \
 			worker_pool.cpp \
 			persistent_worker.cpp \
+			message.cpp \
+			client.cpp \
+			server.cpp \
 
 OBJS = $(SRCS:.cpp=.o)
 
