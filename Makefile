@@ -26,6 +26,8 @@ SRCS =		data_buffer.cpp \
 			message.cpp \
 			client.cpp \
 			server.cpp \
+			random_2D_coordinate_generator.cpp \
+			perlin_noise_2D.cpp 
 
 OBJS = $(SRCS:.cpp=.o)
 
