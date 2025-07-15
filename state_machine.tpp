@@ -42,4 +42,12 @@ void StateMachine<TState>::update()
     }
 }
 
+template<typename TState>
+template<typename T>
+std::size_t StateMachine<TState>::PairHash<T>::operator()(const std::pair<T,T>& p) const
+{
+	// calculate first has ^ second hash
+	return std::hash<T>()(p.first) ^ std::hash<T>()(p.second);	
+}
+
 #endif

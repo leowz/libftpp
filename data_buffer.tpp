@@ -4,9 +4,6 @@
 template<typename T>
 DataBuffer& DataBuffer::operator<<(const T& value)
 {
-/*	static_assert(std::is_trivially_copyable<T>::value, "Only trivially \
-			copyable types can be deserialised.\n"); */
-
 	const unsigned char* raw = reinterpret_cast<const unsigned char*>(&value);
 	buffer_.insert(buffer_.end(), raw, raw + sizeof(T));
 	return *this;
@@ -15,9 +12,6 @@ DataBuffer& DataBuffer::operator<<(const T& value)
 template<typename T>
 DataBuffer& DataBuffer::operator>>(T& value)
 {
-/*	static_assert(std::is_trivially_copyable<T>::value, "Only trivially \
-			copyable types can be deserialised.\n"); */
-
 	if (readPos_ + sizeof(T) > buffer_.size())
 	{
 		throw std::runtime_error("DataBuffer underflow during read.");

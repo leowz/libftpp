@@ -25,22 +25,21 @@ public:
 	WorkerPool(size_t threadCount);
 	~WorkerPool();
 
-    // Prevent copying
-    WorkerPool(const WorkerPool&) = delete;
-    WorkerPool& operator=(const WorkerPool&) = delete;
-
 	void addJob(std::function<void()> jobToExecute);
-
     void stop();
 
-    class IJobs {
+    class IJobs
+    {
     public:
         virtual void execute() = 0;
-        virtual ~IJobs() = default;
     };
 
 
 private:
+    // Prevent copying
+    WorkerPool(const WorkerPool&);
+    WorkerPool& operator=(const WorkerPool&);
+
     void workerLoop(); 
     ThreadSafeBlockingQueue<std::function<void()>> jobQueue_;
     std::vector<std::thread> workers_;

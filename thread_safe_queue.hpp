@@ -21,11 +21,8 @@ template<typename TType>
 class ThreadSafeQueue
 {
 public:
-	ThreadSafeQueue() = default;
-	~ThreadSafeQueue() = default;
-
-	ThreadSafeQueue(const ThreadSafeQueue&) = delete;
-    ThreadSafeQueue& operator=(const ThreadSafeQueue&) = delete;
+	ThreadSafeQueue();
+	~ThreadSafeQueue();
 
 	void	push_back(const TType& newElement);
 	void	push_front(const TType& newElement);
@@ -37,8 +34,10 @@ public:
 	void	clear();
 
 private:
-	std::deque<TType>	queue_;
+	ThreadSafeQueue(const ThreadSafeQueue&);
+    ThreadSafeQueue& operator=(const ThreadSafeQueue&);
 
+	std::deque<TType>	queue_;
 	// use mutable so in const method, can be locked
 	mutable std::mutex mutex_;
 };

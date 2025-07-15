@@ -21,7 +21,7 @@ Client::~Client() {
 
 void Client::connect(const std::string& address, const size_t& port) {
     // call socket from global scope not class scope
-    std::cout << "Connecting to " << address << ":" << port << std::endl;
+    // std::cout << "Connecting to " << address << ":" << port << std::endl;
     socket_ = ::socket(AF_INET, SOCK_STREAM, 0);
     if (socket_ < 0) {
         std::cerr << "Failed to create socket" << std::endl;
@@ -53,12 +53,13 @@ void Client::defineAction(const Message::Type& messageType, const std::function<
 }
 
 void Client::send(const Message& message) {
-    std::cout << "Sending message..." << std::endl;
-    if (message.type() == 4) {
-        message.printStr();
-    } else {
-        message.print();
-    }
+    // debug
+    // std::cout << "Sending message..." << std::endl;
+    // if (message.type() == 4) {
+    //     message.printStr();
+    // } else {
+    //     message.print();
+    // }
     if (socket_ < 0) {
         std::cerr << "Socket is not connected" << std::endl;
         return;
@@ -76,11 +77,11 @@ void Client::send(const Message& message) {
     if (::send(socket_, buffer.data(), buffer.size(), 0) < 0) {
         std::cerr << "Failed to send message" << std::endl;
     }
-    std::cout << "Message sent: type = " << type << ", size = " << size << std::endl;
+    // std::cout << "Message sent: type = " << type << ", size = " << size << std::endl;
 }
 
 void Client::update() {
-    std::cout << "Updating client..." << std::endl;
+    // std::cout << "Updating client..." << std::endl;
     if (socket_ < 0) {
         std::cerr << "Socket is not connected" << std::endl;
         return;

@@ -12,11 +12,15 @@
 
 #include "message.hpp"
 
-Message::Message() : type_(3), readPos_(0) {
-}
+Message::Message() : type_(3), readPos_(0) {}
 
-Message::Message(int type) : type_(type), readPos_(0) {
-}
+Message::~Message() {}
+
+Message::Message(int type) : type_(type), readPos_(0) {}
+
+Message::Type Message::type() const { return type_; }
+
+const std::vector<uint8_t>& Message::buffer() const { return buffer_; }
 
 void    Message::clear() {
     buffer_.clear();

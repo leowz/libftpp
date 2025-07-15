@@ -25,7 +25,7 @@ public:
     using Type = int;
     Message();
     Message(int type);
-    ~Message() = default;
+    ~Message();
 
     Message& operator<<(const std::string& data);
     const Message& operator>>(std::string& data) const;
@@ -37,14 +37,14 @@ public:
     const Message& operator>>(T& content) const;
 
 
-    Type type() const { return type_; }
+    Type type() const;
 
     void    clear();
     void    resetRead();
     void    print() const;
     void    printStr() const;
 
-    const std::vector<uint8_t>& buffer() const { return buffer_; }
+    const std::vector<uint8_t>& buffer() const;
 
 private:
     Type                    type_;

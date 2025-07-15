@@ -29,21 +29,18 @@ public:
 	PersistentWorker();
 	~PersistentWorker();
 
-
-    // Disable copy and move
-    PersistentWorker(const PersistentWorker&) = delete;
-    PersistentWorker& operator=(const PersistentWorker&) = delete;
-
-	
     // Add a task by name
     void	addTask(const std::string& name, const std::function<void()>&
 			jobToExecute);
-
     // Remove a task by name
     void	removeTask(const std::string& name);
 
 private:
 	void	runLoop();	
+    // Disable copy and move
+    PersistentWorker(const PersistentWorker&) ;
+    PersistentWorker& operator=(const PersistentWorker&);
+
 
 	std::unordered_map<std::string, std::function<void()>> taskMap_;
     std::mutex taskMutex_;

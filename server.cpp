@@ -28,7 +28,7 @@ Server::~Server() {
 }
 
 void    Server::start(const size_t& port) {
-    std::cout << "Starting server on port " << port << std::endl;
+    // std::cout << "Starting server on port " << port << std::endl;
     serverSocket_ = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket_ < 0) {
         std::cerr << "Failed to create server socket" << std::endl;
@@ -58,7 +58,7 @@ void    Server::start(const size_t& port) {
 }
 
 void Server::acceptClients() {
-    std::cout << "Server is accepting clients..." << std::endl;
+    // std::cout << "Server is accepting clients..." << std::endl;
     while (running_) {
         sockaddr_in clientAddr{};
         socklen_t clientSize = sizeof(clientAddr);
@@ -76,11 +76,11 @@ void Server::acceptClients() {
 
 void Server::handleClient(long long clientID, int clientSocket) {
     while (running_) {
-        std::cout << "Handling client: " << clientID << " clientSocket: " << clientSocket <<std::endl;
+        // std::cout << "Handling client: " << clientID << " clientSocket: " << clientSocket <<std::endl;
         uint64_t msgSize = 0;
         ssize_t bytes = recv(clientSocket, &msgSize, sizeof(msgSize), MSG_WAITALL);
         if (bytes <= 0) {
-            std::cerr << "Client disconnected or error receiving message size: client " << clientID << std::endl;
+            std::cerr << "Client disconnected from client: " << clientID << std::endl;
             break;
         }
 
@@ -143,7 +143,7 @@ void Server::update() {
         std::lock_guard<std::mutex> lock(mutex_);
         // swap the incoming messages to process them, clear incoming_ for next round
         toProcess.swap(incoming_);
-        std::cout<< "Processing " << toProcess.size() << " incoming messages." << std::endl;
+        // std::cout<< "Processing " << toProcess.size() << " incoming messages." << std::endl;
         incoming_.clear();
     }
 

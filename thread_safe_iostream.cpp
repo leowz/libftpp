@@ -19,7 +19,7 @@ thread_local ThreadSafeIOStream threadSafeCout;
 thread_local ThreadSafeIOStream threadSafeCin;
 thread_local bool ThreadSafeIOStream::isNewLine = true;
 
-ThreadSafeIOStream::ThreadSafeIOStream() = default;
+ThreadSafeIOStream::ThreadSafeIOStream() {};
 
 void ThreadSafeIOStream::setPrefix(const std::string& prefix)
 {

@@ -18,29 +18,11 @@
 template<typename TType>
 class Singleton
 {
-
 public: 
-	static TType*	instance()
-	{
-		if (!instance_)
-		{
-			throw std::runtime_error("Instance not yet created");
-		}
-		else
-		{
-			return instance_;
-		}
-	}
+	static TType*	instance();
 
 	template<typename... TArgs>
-	static void		instantiate(TArgs&&... p_args)
-	{
-		if (instance_)
-		{
-			throw std::runtime_error("Instance already created");
-		}
-		instance_ = new TType(std::forward<TArgs>(p_args)...);
-	}
+	static void		instantiate(TArgs&&... p_args);
 
 private:
 	Singleton();
@@ -52,8 +34,6 @@ private:
 	static TType*	instance_;
 };
 
-template<typename TType>
-TType* Singleton<TType>::instance_ = nullptr;
-
+#include "singleton.tpp"
 
 #endif

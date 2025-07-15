@@ -2,6 +2,12 @@
 # define THREAD_SAFE_QUEUE_TPP
 
 template<typename TType>
+ThreadSafeQueue<TType>::ThreadSafeQueue() {}
+
+template<typename TType>
+ThreadSafeQueue<TType>::~ThreadSafeQueue() {}
+
+template<typename TType>
 void ThreadSafeQueue<TType>::push_back(const TType& newElement) {
     std::lock_guard<std::mutex> lock(mutex_);
     queue_.push_back(newElement);

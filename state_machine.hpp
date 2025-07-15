@@ -35,18 +35,14 @@ private:
 	TState	currentState_;
 
 	template<typename T>
-	struct pair_hash
+	struct PairHash
 	{
-		std::size_t operator()(const std::pair<T,T>& p) const
-		{
-			// calculate first has ^ second hash
-			return std::hash<T>()(p.first) ^ std::hash<T>()(p.second);	
-		}
+		std::size_t operator()(const std::pair<T,T>& p) const;
 	};
 	std::unordered_set<TState>	allowedStates_;
 	std::unordered_map<TState, std::function<void()>>	actions_;
 	std::unordered_map<std::pair<TState, TState>,
-		std::function<void()>, pair_hash<TState>>	transitions_;
+		std::function<void()>, PairHash<TState>>	transitions_;
 };
 
 # include "state_machine.tpp"
