@@ -13,14 +13,22 @@
 #ifndef PERLIN_NOISE_2D_HPP
 #define PERLIN_NOISE_2D_HPP
 
-class PerlinNoise2D {
+#include <cmath>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
 
+class PerlinNoise2D {
 public:
     PerlinNoise2D(unsigned int seed = 0);
     float sample(float x, float y) const;
 
 private:
-    unsigned int    seed_;
+    std::vector<int> permutation;
+
+    static double fade(double t);
+    static double lerp(double t, double a, double b);
+    static double grad(int hash, double x, double y); 
 };
 
 #endif

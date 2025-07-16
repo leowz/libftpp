@@ -11,39 +11,47 @@
 /* ************************************************************************** */
 
 #include "perlin_noise_2D.hpp"
-#include <cmath>
 
-PerlinNoise2D::PerlinNoise2D(unsigned int seed) : seed_(seed) {}
+PerlinNoise2D::PerlinNoise2D(unsigned int seed) {
+    permutation.resize(256);
+    for (int i = 0; i < 256; ++i) permutation[i] = i;
+    std::srand(seed);
+    std::random_shuffle(permutation.begin(), permutation.end());
+    permutation.insert(permutation.end(), permutation.begin(), permutation.end());
+}
+
+double PerlinNoise2D::fade(double t) {
+    return t * t * t * (t * (t * 6 - 15) + 10); // 6t^5 - 15t^4 + 10t^3
+}
+
+double PerlinNoise2D::lerp(double t, double a, double b) {
+    return a + t * (b - a);
+}
+
+double PerlinNoise2D::grad(int hash, double x, double y) {
+    int h = hash & 7; // Take first 3 bits
+    double u = h < 4 ? x : y;
+    double v = h < 4 ? y : x;
+    return ((h & 1) ? -u : u) + ((h & 2) ? -2.0 * v : 2.0 * v);
+}
 
 float   PerlinNoise2D::sample(float x, float y) const
 {
-    // Simple Perlin noise implementation
-    int xi = static_cast<int>(std::floor(x)) & 255;
-    int yi = static_cast<int>(std::floor(y)) & 255;
+    int X = (int)std::floor(x) & 255;
+    int Y = (int)std::floor(y) & 255;
 
-    float xf = x - std::floor(x);
-    float yf = y - std::floor(y);
+    x -= std::floor(x);
+    y -= std::floor(y);
 
-    // Fade function
-    auto fade = [](float t) { return t * t * t * (t * (t * 6 - 15) + 10); };
-    xf = fade(xf);
-    yf = fade(yf);
+    double u = fade(x);
+    double v = fade(y);
 
-    // Hashing function
-    auto hash = [this](int x, int y) {
-        return (x + y * 57 + seed_) % 256;
-    };
+    int A = permutation[X] + Y;
+    int B = permutation[X + 1] + Y;
 
-    // Gradient vectors
-    float gradX1 = hash(xi, yi);
-    float gradY1 = hash(xi + 1, yi);
-    float gradX2 = hash(xi, yi + 1);
-    float gradY2 = hash(xi + 1, yi + 1);
-
-    // Interpolation
-    float n1 = gradX1 * xf + gradY1 * yf;
-    float n2 = gradX2 * (xf - 1) + gradY2 * yf;
-    
-    return (n1 * (1 - xf) + n2 * xf) * (1 - yf) + (n2 * yf);
-
+    double result = lerp(v,
+        lerp(u, grad(permutation[A], x, y), grad(permutation[B], x - 1, y)),
+        lerp(u, grad(permutation[A + 1], x, y - 1), grad(permutation[B + 1], x - 1, y - 1))
+    );
+    return result; 
 }
