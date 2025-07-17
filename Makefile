@@ -34,7 +34,7 @@ OBJS = $(SRCS:.cpp=.o)
 FLAGS 		=  -Wall -Wextra -Werror \
 			   -std=c++11
 
-DEBUGF 		= #-fsanitize=address -g
+DEBUGF 		# = -fsanitize=address -g
 
 # ----- Colors -----
 BLACK		:="\033[1;30m"
@@ -56,7 +56,7 @@ $(NAME): $(OBJS)
 
 %.o:%.cpp 
 	@printf $(GREEN)"compiling %s\n"$(EOC) $@
-	@$(CC) $(FLAGS) -o $@ -c $<
+	@$(CC) $(FLAGS) $(DEBUG) -o $@ -c $<
 
 clean: 
 	@rm -f $(OBJS) &2>/dev/null
@@ -70,7 +70,7 @@ fclean: clean
 	@printf $(GREEN)"$(NAME) fclean\n"$(EOC)
 
 test: all
-	@$(CC) -c $(main) -I. -std=c++11 -o main.o
+	@$(CC) -c $(main) $(DEBUG) -I. -std=c++11 -o main.o
 	@$(CC) main.o -I. -L. -lftpp -std=c++11 -o main
 	@./main
 

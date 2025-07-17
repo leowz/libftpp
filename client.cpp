@@ -88,8 +88,9 @@ void Client::update() {
     }
 
     uint64_t msgSize = 0;
-    if (recv(socket_, &msgSize, sizeof(msgSize), MSG_DONTWAIT) <= 0) {
-        std::cerr << "Socket: message size not received" << std::endl;
+    ssize_t bytes = recv(socket_, &msgSize, sizeof(msgSize), MSG_DONTWAIT);
+    if (bytes <= 0) {
+        std::cerr << "Socket: message size not received: " << std::endl;
         return; // nothing to read
     }
 

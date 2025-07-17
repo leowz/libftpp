@@ -20,10 +20,10 @@ Server::~Server() {
         if (thread.joinable()) thread.join();
     }
     if (serverSocket_ != -1) {
-        close(serverSocket_);
+        ::close(serverSocket_);
     }
     for (auto& client : clients_) {
-        close(client.second);
+        ::close(client.second);
     }
 }
 
@@ -43,7 +43,7 @@ void    Server::start(const size_t& port) {
     // bind address to server socket
     if (::bind(serverSocket_, reinterpret_cast<sockaddr*>(&serverAddr), sizeof(serverAddr)) < 0) {
         std::cerr << "Failed to bind server socket" << std::endl;
-        close(serverSocket_);
+        ::close(serverSocket_);
         return;
     }
 
@@ -54,29 +54,52 @@ void    Server::start(const size_t& port) {
 
     running_ = true;
     threads_.emplace_back(&Server::acceptClients, this);
-
 }
 
 void Server::acceptClients() {
-    // std::cout << "Server is accepting clients..." << std::endl;
+    int flags = fcntl(serverSocket_, F_GETFL, 0);
+    fcntl(serverSocket_, F_SETFL, flags | O_NONBLOCK);
     while (running_) {
-        sockaddr_in clientAddr{};
-        socklen_t clientSize = sizeof(clientAddr);
-        int clientSocket = accept(serverSocket_, (sockaddr*)&clientAddr, &clientSize);
-        if (clientSocket < 0) continue;
+        fd_set read_fds;
+        FD_ZERO(&read_fds);
+        FD_SET(serverSocket_, &read_fds);
+        int max_fd = serverSocket_;
 
-        long long clientID = nextClientID_++;
-        {
-            std::lock_guard<std::mutex> lock(mutex_);
-            clients_[clientID] = clientSocket;
+        // Timeout: 1 second
+        timeval timeout{};
+        timeout.tv_sec = 1;
+        timeout.tv_usec = 0;
+
+        // Wait for readiness to accept
+        int activity = select(max_fd + 1, &read_fds, nullptr, nullptr, &timeout);
+        if (activity < 0) {
+            std::cerr << "select() error\n";
+            continue;
         }
-        threads_.emplace_back(&Server::handleClient, this, clientID, clientSocket);
+        if (activity == 0) {
+            // Timeout, nothing to do, continue the loop
+            continue;
+        }
+        if (FD_ISSET(serverSocket_, &read_fds)) {
+            sockaddr_in clientAddr{};
+            socklen_t clientSize = sizeof(clientAddr);
+            int clientSocket = accept(serverSocket_, (sockaddr*)&clientAddr, &clientSize);
+            if (clientSocket < 0) {
+                std::cerr << "Failed to accept client connection\n";
+                continue;
+            }
+            long long clientID = nextClientID_++;
+            {
+                std::lock_guard<std::mutex> lock(mutex_);
+                clients_[clientID] = clientSocket;
+            }
+            threads_.emplace_back(&Server::handleClient, this, clientID, clientSocket);
+        }
     }
 }
 
 void Server::handleClient(long long clientID, int clientSocket) {
     while (running_) {
-        // std::cout << "Handling client: " << clientID << " clientSocket: " << clientSocket <<std::endl;
         uint64_t msgSize = 0;
         ssize_t bytes = recv(clientSocket, &msgSize, sizeof(msgSize), MSG_WAITALL);
         if (bytes <= 0) {
@@ -99,10 +122,9 @@ void Server::handleClient(long long clientID, int clientSocket) {
     }
 
     {
-        // after runing stops, remove client and close the socket
         std::lock_guard<std::mutex> lock(mutex_);
         clients_.erase(clientID);
-        close(clientSocket);
+        ::close(clientSocket);
     }
 }
 
@@ -138,7 +160,6 @@ void Server::sendToAll(const Message& message) {
 
 void Server::update() {
     std::vector<std::pair<long long, Message>> toProcess;
-
     {
         std::lock_guard<std::mutex> lock(mutex_);
         // swap the incoming messages to process them, clear incoming_ for next round
