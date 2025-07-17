@@ -71,21 +71,18 @@ void Server::acceptClients() {
         timeout.tv_usec = 0;
 
         // Wait for readiness to accept
-        int activity = select(max_fd + 1, &read_fds, nullptr, nullptr, &timeout);
+        int activity = ::select(max_fd + 1, &read_fds, nullptr, nullptr, &timeout);
         if (activity < 0) {
-            std::cerr << "select() error\n";
             continue;
         }
         if (activity == 0) {
-            // Timeout, nothing to do, continue the loop
             continue;
         }
         if (FD_ISSET(serverSocket_, &read_fds)) {
             sockaddr_in clientAddr{};
             socklen_t clientSize = sizeof(clientAddr);
-            int clientSocket = accept(serverSocket_, (sockaddr*)&clientAddr, &clientSize);
+            int clientSocket = ::accept(serverSocket_, (sockaddr*)&clientAddr, &clientSize);
             if (clientSocket < 0) {
-                std::cerr << "Failed to accept client connection\n";
                 continue;
             }
             long long clientID = nextClientID_++;
@@ -101,17 +98,27 @@ void Server::acceptClients() {
 void Server::handleClient(long long clientID, int clientSocket) {
     while (running_) {
         uint64_t msgSize = 0;
-        ssize_t bytes = recv(clientSocket, &msgSize, sizeof(msgSize), MSG_WAITALL);
-        if (bytes <= 0) {
-            std::cerr << "Client disconnected from client: " << clientID << std::endl;
+        ssize_t bytes = recv(clientSocket, &msgSize, sizeof(msgSize), MSG_DONTWAIT);
+        if (bytes < 0) {
+            // In none blocking mode, recv() can return EAGAIN or EWOULDBLOCK if no data is available
+            // so this should not be considered an error
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                continue;
+            } else {
+                //std::cerr << "recv() error from client " << clientID << ": " << strerror(errno) << std::endl;
+                break;
+            }
+        } else if (bytes == 0) {
+            // Client disconnected
+            //std::cerr << "Client disconnected: " << clientID << std::endl;
             break;
         }
 
         Message::Type type;
-        recv(clientSocket, &type, sizeof(type), MSG_WAITALL);
+        recv(clientSocket, &type, sizeof(type), 0);
 
         std::vector<uint8_t> data(msgSize - sizeof(type));
-        recv(clientSocket, data.data(), data.size(), MSG_WAITALL);
+        recv(clientSocket, data.data(), data.size(), 0);
 
         Message msg(type);
         for (auto byte : data) {
@@ -135,7 +142,10 @@ void Server::defineAction(const Message::Type& type, const Action& action) {
 void Server::sendTo(const Message& message, long long clientID) {
     std::lock_guard<std::mutex> lock(mutex_);
     auto it = clients_.find(clientID);
-    if (it == clients_.end()) return;
+    if (it == clients_.end()) {
+        std::cerr << "Client ID " << clientID << " not found." << std::endl;
+        return;
+    }
 
     const auto& buffer = message.buffer();
     uint64_t size = buffer.size() + sizeof(Message::Type);

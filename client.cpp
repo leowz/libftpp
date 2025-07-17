@@ -53,15 +53,8 @@ void Client::defineAction(const Message::Type& messageType, const std::function<
 }
 
 void Client::send(const Message& message) {
-    // debug
-    // std::cout << "Sending message..." << std::endl;
-    // if (message.type() == 4) {
-    //     message.printStr();
-    // } else {
-    //     message.print();
-    // }
     if (socket_ < 0) {
-        std::cerr << "Socket is not connected" << std::endl;
+        //std::cerr << "Socket is not connected" << std::endl;
         return;
     }
 
