@@ -34,7 +34,7 @@ OBJS = $(SRCS:.cpp=.o)
 FLAGS 		=  -Wall -Wextra -Werror \
 			   -std=c++11
 
-DEBUGF 		# = -fsanitize=address -g
+DEBUGF 		= # -fsanitize=address -g
 
 # ----- Colors -----
 BLACK		:="\033[1;30m"
