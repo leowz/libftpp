@@ -13,7 +13,9 @@
 #ifndef IVECTOR2_HPP
 #define IVECTOR2_HPP
 
-#include <iostream> 
+#include <iostream>
+#include <cmath>
+#include <algorithm>
 
 template<typename TType>
 struct IVector2

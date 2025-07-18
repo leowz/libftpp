@@ -13,6 +13,10 @@
 #ifndef IVECTOR3_HPP
 #define IVECTOR3_HPP
 
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+
 template<typename TType>
 struct IVector3
 {
