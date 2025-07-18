@@ -6,7 +6,7 @@
 /*   By: wengzhang <marvin@42.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 23:09:16 by wengzhang         #+#    #+#             */
-/*   Updated: 2025/07/01 23:09:16 by wengzhang        ###   ########.fr       */
+/*   Updated: 2025/07/18 13:33:04 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define MESSAGE_HPP
 
 #include <string>
+#include <cstring>
 #include <vector>
 #include <unordered_map>
 #include <stdint.h>

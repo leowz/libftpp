@@ -17,6 +17,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 class PerlinNoise2D {
 public:
