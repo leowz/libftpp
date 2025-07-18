@@ -31,6 +31,9 @@ public:
 	std::size_t size() const;
 	std::size_t capacity() const;
 
+	DataBuffer& operator<<(const std::string& data);
+    DataBuffer& operator>>(std::string& data);
+
 	// serialization operator reload
 	template<typename T>
 	DataBuffer& operator<<(const T& value);

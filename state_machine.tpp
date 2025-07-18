@@ -4,6 +4,10 @@
 template<typename TState>
 void StateMachine<TState>::addState(const TState& state)
 {
+    if (allowedStates_.size() <= 0)
+    {
+        currentState_ = state;
+    }
 	allowedStates_.insert(state);
 }
 
@@ -24,7 +28,7 @@ void StateMachine<TState>::transitionTo(const TState& state)
 {
     if (allowedStates_.find(state) == allowedStates_.end())
     {
-        throw std::runtime_error("Invalid transition: state not allowed.");
+        throw std::invalid_argument("Invalid transition: state not allowed.");
     }
     if (transitions_.find(std::make_pair(currentState_, state)) != transitions_.end())
     {

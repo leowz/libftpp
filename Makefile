@@ -34,7 +34,7 @@ OBJS = $(SRCS:.cpp=.o)
 FLAGS 		=  -Wall -Wextra -Werror \
 			   -std=c++11
 
-DEBUGF 		= # -fsanitize=address -g
+DEBUG 		=  # -fsanitize=address -g
 
 # ----- Colors -----
 BLACK		:="\033[1;30m"
@@ -71,7 +71,7 @@ fclean: clean
 
 test: all
 	@$(CC) -c $(main) $(DEBUG) -I. -std=c++11 -o main.o
-	@$(CC) main.o -I. -L. -lftpp -std=c++11 -o main
+	@$(CC) main.o $(DEBUG) -I. -L. -lftpp -std=c++11 -o main
 	@./main
 
 re: fclean all

@@ -31,3 +31,23 @@ std::size_t DataBuffer::size() const {
 std::size_t DataBuffer::capacity() const {
     return buffer_.capacity();
 }
+
+DataBuffer& DataBuffer::operator<<(const std::string& data) {
+    size_t len = data.size();
+    *this << len;
+    buffer_.insert(buffer_.end(), data.begin(), data.end());
+    return *this;
+}
+
+DataBuffer& DataBuffer::operator>>(std::string& data) {
+    size_t len;
+    *this >> len;
+
+    if (readPos_ + len > buffer_.size()) {
+        throw std::out_of_range("Not enough data to read string");
+    }
+
+    data.assign(reinterpret_cast<const char*>(buffer_.data() + readPos_), len);
+    readPos_ += len;
+    return *this;
+}
