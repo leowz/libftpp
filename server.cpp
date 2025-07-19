@@ -16,8 +16,11 @@ Server::Server() {}
 
 Server::~Server() {
     running_ = false;
-    for (auto& thread : threads_) {
-        if (thread.joinable()) thread.join();
+    {
+        std::lock_guard<std::mutex> lock(threadsMutex_);
+        for (auto& t : threads_) {
+            if (t.joinable()) t.join();
+        }
     }
     if (serverSocket_ != -1) {
         ::close(serverSocket_);
@@ -31,7 +34,7 @@ void    Server::start(const size_t& port) {
     // std::cout << "Starting server on port " << port << std::endl;
     serverSocket_ = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket_ < 0) {
-        std::cerr << "Failed to create server socket" << std::endl;
+        std::cout << "Failed to create server socket" << std::endl;
         return;
     }
 
@@ -42,18 +45,21 @@ void    Server::start(const size_t& port) {
 
     // bind address to server socket
     if (::bind(serverSocket_, reinterpret_cast<sockaddr*>(&serverAddr), sizeof(serverAddr)) < 0) {
-        std::cerr << "Failed to bind server socket" << std::endl;
+        std::cout << "Failed to bind server socket" << std::endl;
         ::close(serverSocket_);
         return;
     }
 
     if (::listen(serverSocket_, SOMAXCONN) < 0) {
-        std::cerr << "Listen failed\n";
+        std::cout << "Listen failed\n";
         return;
     }
 
     running_ = true;
-    threads_.emplace_back(&Server::acceptClients, this);
+    {
+        std::lock_guard<std::mutex> lock(threadsMutex_);
+        threads_.emplace_back(&Server::acceptClients, this);
+    }
 }
 
 void Server::acceptClients() {
@@ -90,7 +96,10 @@ void Server::acceptClients() {
                 std::lock_guard<std::mutex> lock(mutex_);
                 clients_[clientID] = clientSocket;
             }
-            threads_.emplace_back(&Server::handleClient, this, clientID, clientSocket);
+            {
+                std::lock_guard<std::mutex> lock(threadsMutex_);
+                threads_.emplace_back(&Server::handleClient, this, clientID, clientSocket);
+            }
         }
     }
 }
@@ -110,7 +119,6 @@ void Server::handleClient(long long clientID, int clientSocket) {
             }
         } else if (bytes == 0) {
             // Client disconnected
-            //std::cerr << "Client disconnected: " << clientID << std::endl;
             break;
         }
 
@@ -143,7 +151,7 @@ void Server::sendTo(const Message& message, long long clientID) {
     std::lock_guard<std::mutex> lock(mutex_);
     auto it = clients_.find(clientID);
     if (it == clients_.end()) {
-        std::cerr << "Client ID " << clientID << " not found." << std::endl;
+        std::cout << "Client ID " << clientID << " not found." << std::endl;
         return;
     }
 

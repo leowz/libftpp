@@ -53,6 +53,7 @@ private:
     std::vector<std::pair<long long, Message>>  incoming_;
 
     std::mutex                                  mutex_;
+    std::mutex                                  threadsMutex_;
     std::vector<std::thread>                    threads_;
     std::atomic<bool>                           running_{false};
 
