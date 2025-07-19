@@ -10,7 +10,7 @@ Pool<TType>::~Pool() {
 		if (active_[i]) {
 			destroyObjectAt(i);
 		}
-		delete[] reinterpret_cast<unsigned char*>(storage_[i]);
+		delete reinterpret_cast<unsigned char*>(storage_[i]);
 	}
 }
 
