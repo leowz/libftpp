@@ -28,4 +28,14 @@ void Singleton<TType>::instantiate(TArgs&&... p_args)
 	instance_ = new TType(std::forward<TArgs>(p_args)...);
 }
 
+template<typename TType>
+void Singleton<TType>::destory()
+{
+	if (instance_)
+	{
+		delete instance_;
+	}
+}
+
+
 #endif

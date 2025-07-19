@@ -24,6 +24,8 @@ public:
 	template<typename... TArgs>
 	static void		instantiate(TArgs&&... p_args);
 
+	static void		destory();
+
 private:
 	Singleton();
 	~Singleton();
