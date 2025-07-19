@@ -42,7 +42,14 @@ void    PersistentWorker::runLoop()
 {
     running_.store(true);
     while (running_.load()) {
-        for (const auto& pair  : taskMap_) {
+        std::unordered_map<std::string, std::function<void()>> localTasks;
+        {
+            // need to use local tasks because we are iterating over taskMap_
+            // while potentially modifying it
+            std::lock_guard<std::mutex> lock(taskMutex_);
+            localTasks = taskMap_; // copy tasks
+        }
+        for (const auto& pair  : localTasks) {
             try {
                 pair.second();
             } catch (const std::exception& e) {
