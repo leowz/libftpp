@@ -34,6 +34,10 @@ void StateMachine<TState>::transitionTo(const TState& state)
     {
         transitions_[std::make_pair(currentState_, state)]();
     }
+    else
+    {
+        throw std::invalid_argument("Handle state not found");
+    }
     currentState_ = state;
 }
 
