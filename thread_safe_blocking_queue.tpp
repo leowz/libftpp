@@ -9,22 +9,17 @@ ThreadSafeBlockingQueue<T>::~ThreadSafeBlockingQueue() {};
 
 template<typename T>
 void    ThreadSafeBlockingQueue<T>::push_back(const T& item) {
-    {
-        std::unique_lock<std::mutex> lock(mutex_);
-        if (stopped_) throw std::runtime_error("Queue stopped");
-        queue_.push_back(item);
-    }
-    // notification happens **after** unlock
+    std::unique_lock<std::mutex> lock(mutex_);
+    if (stopped_) throw std::runtime_error("Queue stopped");
+    queue_.push_back(item);
     condVar_.notify_one();
 };
 
 template<typename T>
 void    ThreadSafeBlockingQueue<T>::push_front(T&& item) {
-    {
-        std::unique_lock<std::mutex> lock(mutex_);
-        if (stopped_) throw std::runtime_error("Queue stopped");
-        queue_.push(std::move(item));
-    }
+    std::unique_lock<std::mutex> lock(mutex_);
+    if (stopped_) throw std::runtime_error("Queue stopped");
+    queue_.push(std::move(item));
     condVar_.notify_one();
 };
 
@@ -50,10 +45,8 @@ T   ThreadSafeBlockingQueue<T>::pop_front() {
 
 template<typename T>
 void ThreadSafeBlockingQueue<T>::stop() {
-    {
-        std::unique_lock<std::mutex> lock(mutex_);
-        stopped_ = true;
-    }
+    std::unique_lock<std::mutex> lock(mutex_);
+    stopped_ = true;
     condVar_.notify_all();
 }
 
